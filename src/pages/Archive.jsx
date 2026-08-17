@@ -10,7 +10,7 @@ export default function Archive() {
       date: "15 August 2026",
       desc: "Wishing everyone a very Happy 80th Independence Day! Jai Hind! Let's continue building an Atmanirbhar Bharat.",
       type: "Event",
-      image: "/independence_day.png"
+      image: `${import.meta.env.BASE_URL}independence_day.png`
     }
   ];
 
