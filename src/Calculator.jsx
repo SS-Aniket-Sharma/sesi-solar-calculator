@@ -3,32 +3,44 @@ import React, { useState } from 'react';
 const Calculator = () => {
   const [bill, setBill] = useState('');
   const [area, setArea] = useState('');
+  const [submittedArea, setSubmittedArea] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmittedArea(area);
+  };
 
   // 1 kW = 100 sq ft, 1 kW saves ~₹1000/mo, Base Cost = ₹60,000/kW.
-  const billNum = parseFloat(bill) || 0;
-  const areaNum = parseFloat(area) || 0;
-
-  let kwFromArea = areaNum / 100;
-  let kwFromBill = billNum / 1000;
+  const areaNum = parseFloat(submittedArea) || 0;
 
   // Realistically we suggest the smaller of what they have space for vs what they need
-  // But let's just use what they have space for, or a basic math
-  // "Use these strict PM Surya Ghar rules: 1 kW = 100 sq ft, 1 kW saves ~₹1000/mo, Base Cost = ₹60,000/kW."
+  // But the requirement says change math logic back to purely calculating maximum solar capacity based on Roof Area (Area / 100)
   const capacityKW = Math.floor(areaNum / 100);
 
   const baseCost = capacityKW * 60000;
 
   // Subsidy rules: Up to 2 kW = ₹30,000/kW. Additional capacity up to 3 kW = ₹18,000/kW. Maximum total subsidy cap = ₹78,000.
   let subsidy = 0;
+  let breakdown = [];
+
   if (capacityKW > 0) {
-    if (capacityKW <= 2) {
-      subsidy = capacityKW * 30000;
-    } else {
-      subsidy = 2 * 30000 + Math.min(1, capacityKW - 2) * 18000;
+    const tier1KW = Math.min(2, capacityKW);
+    const tier1Subsidy = tier1KW * 30000;
+    subsidy += tier1Subsidy;
+    breakdown.push(`₹30,000 × ${tier1KW}kW = ₹${tier1Subsidy.toLocaleString('en-IN')}`);
+
+    if (capacityKW > 2) {
+      const tier2KW = Math.min(1, capacityKW - 2);
+      const tier2Subsidy = tier2KW * 18000;
+      subsidy += tier2Subsidy;
+      breakdown.push(`₹18,000 × ${tier2KW}kW = ₹${tier2Subsidy.toLocaleString('en-IN')}`);
     }
   }
 
-  if (subsidy > 78000) subsidy = 78000;
+  if (subsidy > 78000) {
+    subsidy = 78000;
+    breakdown.push(`Capped at Maximum = ₹78,000`);
+  }
 
   const netCost = baseCost - subsidy;
   const monthlySavings = capacityKW * 1000;
@@ -42,7 +54,7 @@ const Calculator = () => {
       </div>
 
       <div className="p-8 flex flex-col md:flex-row gap-8">
-        <div className="flex-1 space-y-6">
+        <form onSubmit={handleSubmit} className="flex-1 space-y-6">
           <div className="space-y-2">
             <label className="block text-gray-700 font-semibold">Monthly Electricity Bill (₹) 💸</label>
             <input
@@ -69,7 +81,16 @@ const Calculator = () => {
               </p>
             )}
           </div>
-        </div>
+
+          <button
+            type="submit"
+            className="w-full py-3 mt-4 text-white font-bold rounded-lg transition-transform transform hover:scale-105 shadow-md bg-gradient-to-r from-orange-500 via-white to-green-500 text-transparent bg-clip-text relative overflow-hidden"
+            style={{ WebkitTextFillColor: 'white', backgroundColor: '#333' }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-yellow-400 to-green-500 opacity-90"></div>
+            <span className="relative z-10 text-white drop-shadow-md">Calculate ROI ✨</span>
+          </button>
+        </form>
 
         <div className="flex-1 bg-yellow-50 rounded-xl p-6 border border-yellow-200">
           <h3 className="text-xl font-bold text-gray-800 border-b pb-2 mb-4 border-yellow-300">Your Solar ROI ✨</h3>
@@ -94,6 +115,19 @@ const Calculator = () => {
               <span className="text-gray-800 font-bold">Net Cost 📉</span>
               <span className="font-bold text-xl text-orange-600">₹{netCost.toLocaleString('en-IN')}</span>
             </div>
+
+            {breakdown.length > 0 && (
+              <div className="bg-gradient-to-r from-orange-50 to-green-50 p-4 rounded-lg border border-gray-200 mt-4 shadow-sm">
+                <h4 className="text-sm font-bold text-gray-700 mb-2 border-b border-gray-300 pb-1">Subsidy Breakdown 📊</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  {breakdown.map((item, index) => (
+                    <li key={index} className="flex items-center">
+                      <span className="mr-2 text-orange-500">👉</span> {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="bg-white p-3 rounded-lg border border-green-200 mt-4">
               <div className="flex justify-between items-center text-sm">
