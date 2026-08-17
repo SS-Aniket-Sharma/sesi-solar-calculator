@@ -1,14 +1,23 @@
 import React from 'react';
-import Calculator from './Calculator';
-import './index.css'; // Make sure this is imported if not in main.jsx
+import { HashRouter, Routes, Route } from 'react-router-dom';
+import MainLayout from './layouts/MainLayout';
+import Home from './pages/Home';
+import StateGuide from './pages/StateGuide';
+import FAQ from './pages/FAQ';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full">
-        <Calculator />
-      </div>
-    </div>
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Home />} />
+          <Route path="state-guide" element={<StateGuide />} />
+          <Route path="faq" element={<FAQ />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </HashRouter>
   );
 }
 
