@@ -4,14 +4,17 @@ const Calculator = () => {
   const [bill, setBill] = useState('');
   const [area, setArea] = useState('');
   const [submittedArea, setSubmittedArea] = useState('');
+  const [submittedBill, setSubmittedBill] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmittedArea(area);
+    setSubmittedBill(bill);
   };
 
   // 1 kW = 100 sq ft, 1 kW saves ~₹1000/mo, Base Cost = ₹60,000/kW.
   const areaNum = parseFloat(submittedArea) || 0;
+  const billNum = parseFloat(submittedBill) || 0;
 
   // Realistically we suggest the smaller of what they have space for vs what they need
   // But the requirement says change math logic back to purely calculating maximum solar capacity based on Roof Area (Area / 100)
@@ -43,7 +46,13 @@ const Calculator = () => {
   }
 
   const netCost = baseCost - subsidy;
-  const monthlySavings = capacityKW * 1000;
+  const potentialSavings = capacityKW * 1000;
+  // The savings cannot exceed the actual bill. If bill is not provided (0), it falls back to potentialSavings for demonstration, or cap it at billNum if billNum > 0.
+  // Wait, if billNum is 0, they might not have submitted a bill.
+  // Actually, let's just use the billNum. If they submit a bill, the monthly savings is min(potentialSavings, billNum).
+  // If billNum is not provided (or 0), we can just assume potentialSavings or 0.
+  // Let's assume if billNum > 0, cap at billNum, else cap at potentialSavings.
+  const monthlySavings = billNum > 0 ? Math.min(potentialSavings, billNum) : potentialSavings;
   const breakEvenYears = (monthlySavings > 0) ? (netCost / (monthlySavings * 12)).toFixed(1) : 0;
 
   return (
@@ -129,18 +138,38 @@ const Calculator = () => {
               </div>
             )}
 
-            <div className="bg-white p-3 rounded-lg border border-green-200 mt-4">
+            <div className="bg-white p-3 rounded-lg border border-green-200 mt-4 space-y-2">
+              {billNum > 0 && (
+                <>
+                  <div className="flex justify-between items-center text-sm border-b border-gray-100 pb-1">
+                    <span className="text-gray-600">Current Monthly Bill</span>
+                    <span className="font-bold text-red-500">₹{billNum.toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm border-b border-gray-100 pb-1">
+                    <span className="text-gray-600">New Estimated Bill</span>
+                    <span className="font-bold text-green-600">
+                      ₹{Math.max(0, billNum - potentialSavings).toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                </>
+              )}
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600">Monthly Savings</span>
-                <span className="font-bold text-green-600">~₹{monthlySavings.toLocaleString('en-IN')}</span>
+                <span className="text-gray-600">Monthly Value Generated</span>
+                <span className="font-bold text-green-600">~₹{potentialSavings.toLocaleString('en-IN')}</span>
               </div>
-              <div className="flex justify-between items-center text-sm mt-1">
+              {billNum > 0 && potentialSavings > billNum && (
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-600">Grid Export Earnings</span>
+                  <span className="font-bold text-yellow-600">~₹{(potentialSavings - billNum).toLocaleString('en-IN')}</span>
+                </div>
+              )}
+              <div className="flex justify-between items-center text-sm mt-1 pt-1 border-t border-gray-100">
                 <span className="text-gray-600">Break-Even Point</span>
                 <span className="font-bold text-blue-600">{breakEvenYears} Years 🚀</span>
               </div>
             </div>
 
-            {monthlySavings >= 3000 && (
+            {potentialSavings >= 3000 && (
               <p className="text-sm text-center text-orange-600 font-bold mt-2">
                 Wow! Funding the nation's future, one panel at a time! 🇮🇳✨
               </p>
