@@ -4,6 +4,8 @@ import MainLayout from './layouts/MainLayout';
 import Home from './pages/Home';
 import StateGuide from './pages/StateGuide';
 import FAQ from './pages/FAQ';
+import Archive from './pages/Archive';
+import Contact from './pages/Contact';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -14,6 +16,8 @@ function App() {
           <Route index element={<Home />} />
           <Route path="state-guide" element={<StateGuide />} />
           <Route path="faq" element={<FAQ />} />
+          <Route path="archive" element={<Archive />} />
+          <Route path="contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
