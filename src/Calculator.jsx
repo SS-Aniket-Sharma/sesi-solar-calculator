@@ -3,7 +3,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { motion } from 'framer-motion';
 import { statesData } from './data/statesData';
-import logoUrl from './assets/logo.png';
+import logoUrl from './assets/sesi-logo.png';
 
 const Calculator = () => {
   const [bill, setBill] = useState('');
@@ -89,24 +89,32 @@ const Calculator = () => {
       transition={{ duration: 0.5 }}
       className="max-w-4xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden border-2 border-orange-500"
     >
-      <div className="bg-orange-500 text-white p-6 flex flex-col items-center text-center relative overflow-hidden">
+      <div className="bg-gradient-to-r from-orange-500 via-orange-600 to-green-600 text-white p-6 flex flex-col items-center text-center relative overflow-hidden">
+        {/* Ashoka Chakra watermark background */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none scale-150">
+           <svg viewBox="0 0 100 100" width="300" height="300">
+             <circle cx="50" cy="50" r="48" fill="none" stroke="white" strokeWidth="2" />
+             <path d="M50 50 L50 2 M50 50 L50 98 M50 50 L2 50 M50 50 L98 50" stroke="white" strokeWidth="1" />
+           </svg>
+        </div>
+
         <motion.img
           initial={{ scale: 0 }}
-          animate={{ scale: 1, rotate: [0, -10, 10, -10, 0] }}
+          animate={{ scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           src={logoUrl}
-          alt="Monkey Mascot"
-          className="w-24 h-24 object-contain mb-2 drop-shadow-lg"
+          alt="SESI Mascot"
+          className="w-24 h-auto object-contain mb-3 drop-shadow-lg z-10 bg-white/20 p-2 rounded-full backdrop-blur-sm"
         />
         <motion.h2
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="text-3xl font-bold z-10"
+          className="text-3xl font-black z-10 drop-shadow-md"
         >
-          🇮🇳 PM Surya Ghar Subsidy Calculator ☀️
+          🇮🇳 SESI PEC Subsidy Calculator ☀️
         </motion.h2>
-        <p className="mt-2 opacity-90 z-10">Light up your home, power the nation! Jai Hind! 🪷</p>
+        <p className="mt-2 font-medium z-10 drop-shadow-sm">Calculate your path to an Atmanirbhar Bharat! Jai Hind! 🪷</p>
       </div>
 
       <div className="p-8 flex flex-col md:flex-row gap-8">
@@ -261,8 +269,8 @@ const Calculator = () => {
           )}
         </motion.div>
       </div>
-      <div className="bg-green-600 text-white p-2 text-center text-sm font-semibold">
-        Make India Atmanirbhar! 🇮🇳
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-3 text-center text-sm font-bold uppercase tracking-widest shadow-inner">
+        Vande Mataram • Make India Atmanirbhar! 🇮🇳
       </div>
     </motion.div>
   );
