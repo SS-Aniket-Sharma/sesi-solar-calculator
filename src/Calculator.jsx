@@ -47,11 +47,6 @@ const Calculator = () => {
 
   const netCost = baseCost - subsidy;
   const potentialSavings = capacityKW * 1000;
-  // The savings cannot exceed the actual bill. If bill is not provided (0), it falls back to potentialSavings for demonstration, or cap it at billNum if billNum > 0.
-  // Wait, if billNum is 0, they might not have submitted a bill.
-  // Actually, let's just use the billNum. If they submit a bill, the monthly savings is min(potentialSavings, billNum).
-  // If billNum is not provided (or 0), we can just assume potentialSavings or 0.
-  // Let's assume if billNum > 0, cap at billNum, else cap at potentialSavings.
   const monthlySavings = billNum > 0 ? Math.min(potentialSavings, billNum) : potentialSavings;
   const breakEvenYears = (monthlySavings > 0) ? (netCost / (monthlySavings * 12)).toFixed(1) : 0;
 
