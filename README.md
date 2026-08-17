@@ -3,6 +3,10 @@
 Welcome to the **PM Surya Ghar Subsidy & ROI Calculator**! 👉👈
 This interactive dashboard is built to help our fellow Indians understand how much they can save by switching to solar energy. Make India Atmanirbhar! 🪷
 
+**🚀 LIVE DEMO 🚀**
+Check it out right here and start saving today:
+[👉 https://ss-aniket-sharma.github.io/sesi-solar-calculator/ 👈](https://ss-aniket-sharma.github.io/sesi-solar-calculator/)
+
 ## 🌟 Why did we build this?
 
 Honestly? We built this to save the grid, one panel at a time! 😅 Imagine not having power cuts while playing cricket or binge-watching your favorite shows. Plus, if you have enough roof space (don't live in a shoebox, please!), you are literally funding the nation's future by reducing our dependence on fossil fuels. Jai Hind! 🇮🇳
@@ -35,4 +39,5 @@ Want to run this cute lil' app locally? Follow these standard dev steps:
 4. Open the link in your browser and start calculating! ✨
 
 ---
-Made with ❤️, 🤍, and 💚 for India.
+Built with sheer patriotism and lots of code! 🧑‍💻👩‍💻
+Made with ❤️, 🤍, and 💚 for a brighter, Atmanirbhar India! Jai Bharat! 🇮🇳✨
