@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import { motion } from 'framer-motion';
+import { statesData } from './statesData';
+import logoUrl from './assets/logo.png';
 
 const Calculator = () => {
   const [bill, setBill] = useState('');
   const [area, setArea] = useState('');
+  const [selectedState, setSelectedState] = useState(statesData[0].name);
   const [submittedArea, setSubmittedArea] = useState('');
   const [submittedBill, setSubmittedBill] = useState('');
+  const [submittedState, setSubmittedState] = useState(statesData[0].name);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setSubmittedArea(area);
     setSubmittedBill(bill);
+    setSubmittedState(selectedState);
   };
 
   // 1 kW = 100 sq ft, 1 kW saves ~₹1000/mo, Base Cost = ₹60,000/kW.
@@ -30,19 +38,28 @@ const Calculator = () => {
     const tier1KW = Math.min(2, capacityKW);
     const tier1Subsidy = tier1KW * 30000;
     subsidy += tier1Subsidy;
-    breakdown.push(`₹30,000 × ${tier1KW}kW = ₹${tier1Subsidy.toLocaleString('en-IN')}`);
+    breakdown.push(`Central: ₹30,000 × ${tier1KW}kW = ₹${tier1Subsidy.toLocaleString('en-IN')}`);
 
     if (capacityKW > 2) {
       const tier2KW = Math.min(1, capacityKW - 2);
       const tier2Subsidy = tier2KW * 18000;
       subsidy += tier2Subsidy;
-      breakdown.push(`₹18,000 × ${tier2KW}kW = ₹${tier2Subsidy.toLocaleString('en-IN')}`);
+      breakdown.push(`Central: ₹18,000 × ${tier2KW}kW = ₹${tier2Subsidy.toLocaleString('en-IN')}`);
     }
   }
 
   if (subsidy > 78000) {
     subsidy = 78000;
-    breakdown.push(`Capped at Maximum = ₹78,000`);
+    breakdown.push(`Central Subsidy Capped at Maximum = ₹78,000`);
+  }
+
+  // State extra subsidy
+  const stateInfo = statesData.find(s => s.name === submittedState);
+  const stateExtra = stateInfo ? stateInfo.extraSubsidy : 0;
+
+  if (capacityKW > 0 && stateExtra > 0) {
+      subsidy += stateExtra;
+      breakdown.push(`State Extra Subsidy (${submittedState}) = ₹${stateExtra.toLocaleString('en-IN')}`);
   }
 
   const netCost = baseCost - subsidy;
@@ -50,15 +67,69 @@ const Calculator = () => {
   const monthlySavings = billNum > 0 ? Math.min(potentialSavings, billNum) : potentialSavings;
   const breakEvenYears = (monthlySavings > 0) ? (netCost / (monthlySavings * 12)).toFixed(1) : 0;
 
+  const pdfRef = useRef();
+
+  const downloadPDF = () => {
+    const input = pdfRef.current;
+    html2canvas(input, { scale: 2 }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save('Surya-Ghar-ROI-Report.pdf');
+    });
+  };
+
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden border-2 border-orange-500">
-      <div className="bg-orange-500 text-white p-6 text-center">
-        <h2 className="text-3xl font-bold">🇮🇳 PM Surya Ghar Subsidy Calculator ☀️</h2>
-        <p className="mt-2 opacity-90">Light up your home, power the nation! Jai Hind! 🪷</p>
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-4xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden border-2 border-orange-500"
+    >
+      <div className="bg-orange-500 text-white p-6 flex flex-col items-center text-center relative overflow-hidden">
+        <motion.img
+          initial={{ scale: 0 }}
+          animate={{ scale: 1, rotate: [0, -10, 10, -10, 0] }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          src={logoUrl}
+          alt="Monkey Mascot"
+          className="w-24 h-24 object-contain mb-2 drop-shadow-lg"
+        />
+        <motion.h2
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="text-3xl font-bold z-10"
+        >
+          🇮🇳 PM Surya Ghar Subsidy Calculator ☀️
+        </motion.h2>
+        <p className="mt-2 opacity-90 z-10">Light up your home, power the nation! Jai Hind! 🪷</p>
       </div>
 
       <div className="p-8 flex flex-col md:flex-row gap-8">
-        <form onSubmit={handleSubmit} className="flex-1 space-y-6">
+        <motion.form
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          onSubmit={handleSubmit}
+          className="flex-1 space-y-6"
+        >
+          <div className="space-y-2">
+            <label className="block text-gray-700 font-semibold">Select Your State 🗺️</label>
+            <select
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none"
+            >
+              {statesData.map(state => (
+                <option key={state.name} value={state.name}>{state.name}</option>
+              ))}
+            </select>
+          </div>
+
           <div className="space-y-2">
             <label className="block text-gray-700 font-semibold">Monthly Electricity Bill (₹) 💸</label>
             <input
@@ -94,10 +165,16 @@ const Calculator = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-yellow-400 to-green-500 opacity-90"></div>
             <span className="relative z-10 text-white drop-shadow-md">Calculate ROI ✨</span>
           </button>
-        </form>
+        </motion.form>
 
-        <div className="flex-1 bg-yellow-50 rounded-xl p-6 border border-yellow-200">
-          <h3 className="text-xl font-bold text-gray-800 border-b pb-2 mb-4 border-yellow-300">Your Solar ROI ✨</h3>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="flex-1 flex flex-col"
+        >
+          <div ref={pdfRef} className="bg-yellow-50 rounded-xl p-6 border border-yellow-200 flex-1">
+            <h3 className="text-xl font-bold text-gray-800 border-b pb-2 mb-4 border-yellow-300">Your Solar ROI ✨</h3>
 
           <div className="space-y-4">
             <div className="flex justify-between items-center">
@@ -170,12 +247,24 @@ const Calculator = () => {
               </p>
             )}
           </div>
-        </div>
+          </div>
+
+          {(capacityKW > 0) && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={downloadPDF}
+              className="w-full mt-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors shadow-md flex items-center justify-center gap-2"
+            >
+              <span>📄 Download PDF Report</span>
+            </motion.button>
+          )}
+        </motion.div>
       </div>
       <div className="bg-green-600 text-white p-2 text-center text-sm font-semibold">
         Make India Atmanirbhar! 🇮🇳
       </div>
-    </div>
+    </motion.div>
   );
 };
 
