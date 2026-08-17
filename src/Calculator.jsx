@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { motion } from 'framer-motion';
-import { statesData } from './statesData';
+import { statesData } from './data/statesData';
 import logoUrl from './assets/logo.png';
 
 const Calculator = () => {
