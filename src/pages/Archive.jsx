@@ -6,24 +6,11 @@ export default function Archive() {
   const archives = [
     {
       id: 1,
-      title: "Inaugural SESI PEC Meet",
-      date: "August 15, 2023",
-      desc: "The foundational gathering of the SESI PEC Chapter, pledging to drive India's renewable energy goals on Independence Day.",
-      type: "Event"
-    },
-    {
-      id: 2,
-      title: "Solar Workshop 101",
-      date: "September 5, 2023",
-      desc: "Hands-on session on photovoltaic cells and inverter technology. Over 100 students attended.",
-      type: "Workshop"
-    },
-    {
-      id: 3,
-      title: "Grid Optimization Hackathon",
-      date: "November 12, 2023",
-      desc: "A 24-hour hackathon focused on finding software solutions to optimize smart grids for solar integration.",
-      type: "Hackathon"
+      title: "Independence day",
+      date: "15 August 2026",
+      desc: "Wishing everyone a very Happy 80th Independence Day! Jai Hind! Let's continue building an Atmanirbhar Bharat.",
+      type: "Event",
+      image: "/independence_day.png"
     }
   ];
 
@@ -75,10 +62,16 @@ export default function Archive() {
                 <p className="text-slate-600 text-sm leading-relaxed mb-6">
                   {item.desc}
                 </p>
-                <div className="flex items-center text-orange-500 text-sm font-bold hover:text-orange-600 cursor-pointer">
-                  <ImageIcon size={16} className="mr-1" />
-                  View Gallery
-                </div>
+                {item.image ? (
+                  <div className="mt-4">
+                    <img src={item.image} alt={item.title} className="w-full h-auto rounded-lg shadow-md" />
+                  </div>
+                ) : (
+                  <div className="flex items-center text-orange-500 text-sm font-bold hover:text-orange-600 cursor-pointer">
+                    <ImageIcon size={16} className="mr-1" />
+                    View Gallery
+                  </div>
+                )}
               </div>
             </motion.div>
           ))}
