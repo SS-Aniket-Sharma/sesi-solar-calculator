@@ -4,9 +4,9 @@ import { Phone, MapPin, Instagram, MessageCircle } from 'lucide-react';
 
 export default function Contact() {
   const contacts = [
-    { name: "Aniket", role: "President", phone: "+91 77174 73302" },
-    { name: "Arvind", role: "Vice President", phone: "+91 76967 37101" },
-    { name: "Parth", role: "Technical Lead", phone: "+91 81682 98942" }
+    { name: "Aniket", role: "Secretary", phone: "+91 77174 73302" },
+    { name: "Arvind", role: "Joint Secretary", phone: "+91 76967 37101" },
+    { name: "Parth", role: "Assistant Secretary", phone: "+91 81682 98942" }
   ];
 
   return (
